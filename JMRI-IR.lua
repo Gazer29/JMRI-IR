@@ -1,5 +1,6 @@
--- JMRIswitch v1
+-- JMRI-IR integration v0.1
 -- Requires Aumation Mod and JMRI Server
+-- https://pastebin.com/zwXhwFDZ
 
 local component = require("component")
 local internet = require("internet")
@@ -21,6 +22,66 @@ local chunkLoad = true
 local RUNNING = true
 local flagReset = false
 local CurrSwitches = {}
+
+-- GL Added, list types, seems unused
+local stocktypes = {
+    "immersiverailroading:locomotivediesel",
+    "immersiverailroading:locomotivesteam"
+    }
+
+-- GL Added, runs immediately, looks for all entity cards
+link_table = {}
+for i,v in pairs(component.list()) do
+    if v == "entity_link" then
+        table.insert(link_table, i)
+        end
+    end 
+print("Entity_link's found: ", #link_table)
+    
+function overArray()
+    local b = {}
+    count = 0
+    for i, link in pairs(link_table) do
+        local entity = component.proxy(link).getAPI("immersiverailroading:locomotivediesel")
+        if entity ~= nil then
+            rollingstock = entity
+            local posit_array = {}
+            local a = {}
+            uuid = rollingstock.getUUID()
+            position = rollingstock.getLocation()
+            xpos = position.getX()
+            ypos = position.getY()
+            zpos = position.getZ()
+            speed = rollingstock.getCurrentSpeed()
+            if locotable[uuid] == nil then
+                setspeed = 0
+                method = "Manual"
+            else
+                setspeed = locotable[uuid].setspeed
+                method = locotable[uuid].method
+            end
+            tag = "" -- add later
+            c = {["x"] = xpos, ["y"] = ypos, ["z"] = zpos}
+            a = {}
+            a["uuid"] = uuid
+            a["speed"] = speed
+            a["setspeed"] = setspeed
+            a["method"] = method
+            a["posit_array"] = c
+            a["name"] = rollingstock.getName()
+            a["tag"] = "" --rollingstock.getTag()
+            table.insert(b,1,a) 
+            end
+        end
+        -- Don't need to send this data, use b 
+        --data = json:encode(b)
+        --if data ~= "" then
+            --con:write("#01,"..data.."\r\n")
+            --con:flush()
+            --end
+end
+
+
 
 -- Decode
 function decode(x)
