@@ -29,6 +29,44 @@ local stocktypes = {
     "immersiverailroading:locomotivesteam"
     }
 
+-- GL New - point check function
+function checkRect(a1,b1,a2,b2,x,y)
+    if a1 < a2 then
+        x1 = a1
+        x2 = a2
+        else
+        x1 = a2
+        x2 = a1
+        end
+    if b1 < b2 then
+        y1 = b1
+        y2 = b2
+        else
+        y1 = b2
+        y2 = b1
+        end
+    if (x >= x1 and x <= x2 and y >= y1 and y <= y2) then
+        return true
+        else
+        return false
+        end
+    end
+
+-- blocks 
+blocks = {}
+    blocks[1] = {1,1,10,10}
+    blocks[2] = {20,20,100,100}
+
+for a,b in pairs(blocks) do
+    x1 = b[1]
+    y1 = b[2]
+    x2 = b[3]
+    y2 = b[4]
+    answer = checkRect(x1,y1,x2,y2,5,5)
+    print("Block", a,": ", answer)
+    end
+
+
 -- GL Added, runs immediately, looks for all entity cards
 link_table = {}
 for i,v in pairs(component.list()) do
