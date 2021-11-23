@@ -67,14 +67,14 @@ for a,b in pairs(blocks) do
     end
 
 
--- GL Added, runs immediately, looks for all entity cards
-link_table = {}
-for i,v in pairs(component.list()) do
-    if v == "entity_link" then
-        table.insert(link_table, i)
-        end
-    end 
-print("Entity_link's found: ", #link_table)
+        -- GL Added, runs immediately, looks for all entity cards
+        link_table = {}
+        for i,v in pairs(component.list()) do
+            if v == "entity_link" then
+                table.insert(link_table, i)
+                end
+            end 
+        print("Entity_link's found: ", #link_table)
     
 function overArray()
     local b = {}
@@ -324,7 +324,18 @@ function FindSwitches()
     print("Redboxes found: ",count)
     return data
 end
- 
+
+-- Turns JMRI Blocks into a readable table
+function ParseBlocks(x)
+    if x ~= nil then
+        for i,v in pairs(x) do
+            print(i,v)
+        end
+    else
+        return false
+    end
+end
+
 -- Turns JMRI light to a readable table
 function ParseLight(x)
     if x ~= nil then
@@ -521,20 +532,6 @@ thread.create(handleEvents):detach()
 --finishConnect():boolean
 --Ensures a response is available. Errors if the connection failed.
 
-if httpGET(getip.."/railroad") ~= nil then
-    if httpGET(getip.."/light/ILBuildMode") == nil then
-        httpPUT(getip.."/light", buildLight("ILBuildMode", false))
-        print("Adding to Lights")
-    end
-    if httpGET(getip.."/light/ILFindSwitches") == nil then
-        httpPUT(getip.."/light", buildLight("ILFindSwitches", false))
-        print("Adding to Lights")
-    end
-    if httpGET(getip.."/light/ILUpdateSwitches") == nil then
-        httpPUT(getip.."/light", buildLight("ILUpdateSwitches", false))
-        print("Adding to Lights")
-    end
-end
 
 -- While running, checks in order; User reset, Build mode, Find switches, Update switches
 while RUNNING do
@@ -551,24 +548,14 @@ while RUNNING do
         term.clear()
         getip = "http://"..CONFIG.ip..":"..CONFIG.port.."/json"
     end
-    print("JMRI Switches")
+    print("JMRI IR")
     print(os.date(" %I:%M %p"))
     print("Reset: Cntl + r")
     print("Exit: Cntl + q")
     if httpGET(getip.."/railroad") ~= nil then
-        if ParseLight(httpGET(getip.."/light/ILBuildMode")) then -- Constantly finds switches
-            print("In Build Mode")
-            CurrSwitches = compareTables(FindSwitches())
-            compareWeb(CurrSwitches, (ParseTurnout(httpsGET(getip.."/turnout"))))
-        elseif ParseLight(httpGET(getip.."/light/ILFindSwitches")) then -- One off Find switches
-            httpPOST(getip.."/light/ILFindSwitches", buildLight("ILFindSwitches", false)) -- Set Web FindSwitches to false
-            print("Finding Switches")
-            CurrSwitches = compareTables(FindSwitches())
-            compareWeb(CurrSwitches, (ParseTurnout(httpsGET(getip.."/turnout"))))
-        end
-        if ParseLight(httpGET(getip.."/light/ILUpdateSwitches")) then -- Only updates current switches
-            compareWebState(CurrSwitches, (ParseTurnout(httpsGET(getip.."/turnout"))))
-        end
+        
+        ParseBlocks(httpsGET(getip.."/blocks"))))
+
     else
         print("No connection")
     end
