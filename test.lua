@@ -328,8 +328,25 @@ end
 -- Turns JMRI Blocks into a readable table
 function ParseBlocks(x)
     if x ~= nil then
+        blockTable = {}
         for i,v in pairs(x) do
             print(i,v)
+            print(v["data"]["name"])
+            name = v["data"]["name"]
+            name = string.sub( name, 3 )
+            username = v["data"]["userName"]
+            comment = v["data"]["comment"]
+            length = v["data"]["length"]
+            state = v["data"]["state"] -- 4 un	2 oc 0 unknown
+            permissive = v["data"]["permissive"]
+            curvature = v["data"]["curvature"]
+            reporter = v["data"]["reporter"]
+            speedLimit = v["data"]["speedLimit"]
+            sensor = v["data"]["sensor"]
+            speed = v["data"]["speed"]
+            direction = v["data"]["direction"]
+            
+            v["data"]["comment"] = "TESTING123"
         end
     else
         return false
@@ -553,9 +570,8 @@ while RUNNING do
     print("Reset: Cntl + r")
     print("Exit: Cntl + q")
     if httpGET(getip.."/railroad") ~= nil then
-        
-        ParseBlocks(httpsGET(getip.."/blocks"))))
-
+        testdata = ParseBlocks(httpsGET(getip.."/blocks"))
+        httpPUT(getip.."/blocks", testdata) 
     else
         print("No connection")
     end
