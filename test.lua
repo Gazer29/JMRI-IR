@@ -346,8 +346,10 @@ function ParseBlocks(x)
             speed = v["data"]["speed"]
             direction = v["data"]["direction"]
             
+            v["data"]["name"] = name.."9"
             v["data"]["comment"] = "TESTING123"
         end
+        return x[1]
     else
         return false
     end
