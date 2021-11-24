@@ -580,17 +580,17 @@ while RUNNING do
     print(os.date(" %I:%M %p"))
     print("Reset: Cntl + r")
     print("Exit: Cntl + q")
-    if clockers = 0 then
-        value = true
+    if clockers == 0 then
+        value = 2
         clockers=-1
         else
-        value = false
+        value = 4
         clockers=0
         end
     if httpGET(getip.."/railroad") ~= nil then
         testdata = ParseBlocks(httpsGET(getip.."/blocks"))
-        httpPUT(getip.."/blocks", testdata) 
-        jmriSetSensor("IS99","TEST1","COM1",value,2) --name,username,comment,inverted,state
+        --httpPUT(getip.."/blocks", testdata) 
+        jmriSetSensor("IS99","TEST1","COM1",true,value) --name,username,comment,inverted,state
     else
         print("No connection")
     end
