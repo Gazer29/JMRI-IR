@@ -410,6 +410,15 @@ function buildLight(name, state)
     return out
 end
 
+-- Sets JMRI sensor
+function jmriSetSensor(name,username,comment,inverted,state) -- inverted= true/false; state= 0 unk,2 on, 4 off
+    out = {
+        type = "sensor",
+        data={name=name,username=username,state=state,inverted=inverted,comment=comment}
+        }
+    httpPUT(getip.."/sensor", out)
+    end
+
 -- JMRI Turnout state converts to true or false
 function JTstate(x) 
     local out = false
@@ -551,7 +560,7 @@ thread.create(handleEvents):detach()
 --finishConnect():boolean
 --Ensures a response is available. Errors if the connection failed.
 
-
+clockers = 0
 -- While running, checks in order; User reset, Build mode, Find switches, Update switches
 while RUNNING do
     if flagReset then
@@ -571,9 +580,17 @@ while RUNNING do
     print(os.date(" %I:%M %p"))
     print("Reset: Cntl + r")
     print("Exit: Cntl + q")
+    if clockers = 0 then
+        value = true
+        clockers=-1
+        else
+        value = false
+        clockers=0
+        end
     if httpGET(getip.."/railroad") ~= nil then
         testdata = ParseBlocks(httpsGET(getip.."/blocks"))
         httpPUT(getip.."/blocks", testdata) 
+        jmriSetSensor("IS99","TEST1","COM1",value,2) --name,username,comment,inverted,state
     else
         print("No connection")
     end
